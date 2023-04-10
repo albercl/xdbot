@@ -37,7 +37,7 @@ export const XDStatsExecute = async (interaction: Interaction) => {
     interaction.options.getUser("usuario");
 
     switch (interaction.options.getSubcommand()) {
-        case "global":
+        case XDStatsGlobal.name:
             const messages = await User.sum("messagecount");
             const xds = await User.sum("xdcount");
 
@@ -49,7 +49,7 @@ export const XDStatsExecute = async (interaction: Interaction) => {
                     ).toFixed(2)}%`
             );
             break;
-        case "usuario":
+        case XDStatsUser.name:
             let discordUser = interaction.options.getUser("usuario", false);
             if (!discordUser) discordUser = interaction.user;
 
@@ -74,8 +74,5 @@ export const XDStatsExecute = async (interaction: Interaction) => {
                 );
             }
             break;
-    }
-
-    if (interaction.commandName === XDStats.name) {
     }
 };
