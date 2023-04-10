@@ -1,32 +1,33 @@
 import {
     Interaction,
     SlashCommandBuilder,
+    SlashCommandSubcommandBuilder,
     SlashCommandUserOption,
 } from "discord.js";
 import { User } from "../model/User";
 
+export const XDStatsGlobal = new SlashCommandSubcommandBuilder()
+    .setName("global")
+    .setDescription(
+        "Consulta tus estadísticas de 'xd' en todos los servidores"
+    );
+
+export const XDStatsUser = new SlashCommandSubcommandBuilder()
+    .setName("usuario")
+    .setDescription("Consulta las estadísticas de 'xd' de un usuario")
+    .addUserOption(
+        new SlashCommandUserOption()
+            .setName("usuario")
+            .setDescription(
+                "El usuario del que quieres consultar las estadísticas de 'xd'"
+            )
+    );
+
 export const XDStats = new SlashCommandBuilder()
     .setName("xdstats")
     .setDescription("Consulta tus estadísticas de 'xd'")
-    .addSubcommand((subcommand) =>
-        subcommand
-            .setName("global")
-            .setDescription(
-                "Consulta tus estadísticas de 'xd' en todos los servidores"
-            )
-    )
-    .addSubcommand((subcommand) =>
-        subcommand
-            .setName("usuario")
-            .setDescription("Consulta las estadísticas de 'xd' de un usuario")
-            .addUserOption(
-                new SlashCommandUserOption()
-                    .setName("usuario")
-                    .setDescription(
-                        "El usuario del que quieres consultar las estadísticas de 'xd'"
-                    )
-            )
-    );
+    .addSubcommand(XDStatsGlobal)
+    .addSubcommand(XDStatsUser);
 
 export const XDStatsExecute = async (interaction: Interaction) => {
     if (!interaction.isChatInputCommand()) return;
@@ -49,16 +50,16 @@ export const XDStatsExecute = async (interaction: Interaction) => {
             );
             break;
         case "usuario":
-            let discordUser = interaction.options.getUser("usuario");
+            let discordUser = interaction.options.getUser("usuario", false);
             if (!discordUser) discordUser = interaction.user;
 
             const user = await User.findOne({
-                where: { id: interaction.user.id.toString() },
+                where: { id: discordUser.id.toString() },
             });
 
             if (user) {
                 await interaction.reply(
-                    `${user.username} ha enviado ${
+                    `${discordUser.username} ha enviado ${
                         user.messagecount
                     } mensajes y has escrito 'xd' ${
                         user.xdcount
