@@ -1,7 +1,7 @@
 import { Client } from "discord.js";
 import sequelize from "./Sequelize";
 import { User } from "./model/User";
-import { XDStats } from "./commands/XDStats";
+import { XDStatsExecute } from "./commands/XDStats";
 
 sequelize.sync({ alter: true });
 
@@ -37,30 +37,7 @@ client.on("messageCreate", async (message) => {
 });
 
 client.on("interactionCreate", async (interaction) => {
-    if (interaction.isCommand()) {
-        if (interaction.commandName === XDStats.name) {
-            const user = await User.findOne({
-                where: { id: interaction.user.id.toString() },
-            });
-
-            if (user) {
-                await interaction.reply(
-                    `Has enviado ${
-                        user.messagecount
-                    } mensajes y has escrito 'xd' ${
-                        user.xdcount
-                    } veces.\nEl porcentaje de 'xd' por mensaje es del ${(
-                        (user.xdcount / user.messagecount) *
-                        100
-                    ).toFixed(2)}%`
-                );
-            } else {
-                await interaction.reply(
-                    "Aún no has enviado ningún mensaje. Envía uno para que pueda calcular tus estadísticas."
-                );
-            }
-        }
-    }
+    await XDStatsExecute(interaction);
 });
 
 client.login(process.env.TOKEN);

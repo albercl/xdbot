@@ -25,6 +25,13 @@ const rest = new REST().setToken(token);
             body: commands,
         });
 
+        await rest.put(
+            Routes.applicationGuildCommands(clientId, "796755518274273330"),
+            {
+                body: commands,
+            }
+        );
+
         console.log(`Successfully reloaded application (/) commands.`);
     } catch (error) {
         // And of course, make sure you catch and log any errors!
