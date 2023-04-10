@@ -41,11 +41,11 @@ export const XDStatsExecute = async (interaction: Interaction) => {
             const xds = await User.sum("xdcount");
 
             await interaction.reply(
-                `En total se han enviado ${messages} mensajes y se han escrito 'xd' ${xds} veces.\n
-                El porcentaje de 'xd' por mensaje es del ${(
-                    (xds / messages) *
-                    100
-                ).toFixed(2)}%`
+                `En total se han enviado ${messages} mensajes y se han escrito 'xd' ${xds} veces.\n` +
+                    `El porcentaje de 'xd' por mensaje es del ${(
+                        (xds / messages) *
+                        100
+                    ).toFixed(2)}%`
             );
             break;
         case "usuario":
