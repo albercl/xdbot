@@ -58,7 +58,7 @@ export const XDStatsExecute = async (interaction: Interaction) => {
 
             if (user) {
                 await interaction.reply(
-                    `Has enviado ${
+                    `${user.username} ha enviado ${
                         user.messagecount
                     } mensajes y has escrito 'xd' ${
                         user.xdcount
