@@ -3,6 +3,7 @@ import {
     SlashCommandSubcommandBuilder,
 } from "discord.js";
 import { Member } from "../../model/Member";
+import sequelize from "../../Sequelize";
 
 export const XDStatsGuild = new SlashCommandSubcommandBuilder()
     .setName("server")
@@ -14,7 +15,13 @@ export const XDStatsGuildExecute = async (
     const guildStats = await Member.findOne({
         where: { guildId: interaction.guild.id },
         group: ["guildId"],
-        attributes: ["messageCount", "xdCount"],
+        attributes: [
+            [
+                sequelize.fn("SUM", sequelize.col("messageCount")),
+                "messageCount",
+            ],
+            [sequelize.fn("SUM", sequelize.col("xdCount")), "xdCount"],
+        ],
     });
 
     if (!guildStats)
