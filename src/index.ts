@@ -1,9 +1,9 @@
 import { Client } from "discord.js";
 import sequelize from "./Sequelize";
-import { User } from "./model/User";
-import { XDStatsExecute } from "./commands/XDStats";
+import { XDStatsExecute } from "./commands/XDStats/XDStats";
+import { Member } from "./model/Member";
 
-sequelize.sync({ alter: true });
+const sequelizePromise = sequelize.sync({ alter: true });
 
 const client = new Client({
     intents: ["Guilds", "GuildMessages", "MessageContent"],
@@ -15,29 +15,33 @@ client.on("ready", () => {
 
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
+    if (!message.inGuild()) return;
 
-    const [user] = await User.findOrCreate({
-        where: { id: message.author.id },
+    const [member] = await Member.findOrCreate({
+        where: { userId: message.author.id, guildId: message.guild.id },
         defaults: {
-            id: message.author.id.toString(),
-            username: message.author.username,
-            xdcount: 0,
-            messagecount: 0,
+            userId: message.author.id.toString(),
+            guildId: message.guild.id.toString(),
+            messageCount: 0,
+            xdCount: 0,
         },
     });
 
-    user.messagecount++;
+    member.messageCount++;
 
-    if (message.content.toLowerCase().includes("xd"))
-        user.xdcount += message.content.match(/xd/gi)?.length || 0;
+    if (message.content.toLowerCase().includes("xd")) {
+        const xdCount = message.content.match(/xd/gi)?.length || 0;
+        member.xdCount += xdCount;
+    }
 
-    await user.save();
-
-    console.log(user.toJSON());
+    await member.save();
 });
 
 client.on("interactionCreate", async (interaction) => {
     await XDStatsExecute(interaction);
 });
 
-client.login(process.env.TOKEN);
+sequelizePromise.then(async () => {
+    console.log("Database is ready! Logging in...");
+    await client.login(process.env.TOKEN);
+});

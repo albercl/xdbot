@@ -4,7 +4,7 @@ import { config } from "dotenv";
 config();
 
 const sequelize = new Sequelize({
-    database: "xd_bot",
+    database: process.env.DB_SCHEMA,
     dialect: "mariadb",
     username: process.env.DB_USER,
     password: process.env.DB_PASS,
