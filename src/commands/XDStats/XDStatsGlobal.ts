@@ -3,6 +3,7 @@ import {
     SlashCommandSubcommandBuilder,
 } from "discord.js";
 import { Member } from "../../model/Member";
+import sequelize from "../../Sequelize";
 
 export const XDStatsGlobal = new SlashCommandSubcommandBuilder()
     .setName("global")
@@ -14,8 +15,13 @@ export const XDStatsGlobalExecute = async (
     interaction: ChatInputCommandInteraction
 ) => {
     const guildStats = await Member.findOne({
-        group: ["guildId"],
-        attributes: ["messageCount", "xdCount"],
+        attributes: [
+            [sequelize.fn("SUM", sequelize.col("xdCount")), "xdCount"],
+            [
+                sequelize.fn("SUM", sequelize.col("messageCount")),
+                "messageCount",
+            ],
+        ],
     });
 
     await interaction.reply(
